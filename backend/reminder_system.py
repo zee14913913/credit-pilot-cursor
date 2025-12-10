@@ -4,7 +4,6 @@
 from sqlalchemy.orm import Session
 from datetime import date, datetime, timedelta
 from typing import Dict, List
-import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 import os
