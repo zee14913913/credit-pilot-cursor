@@ -1,10 +1,11 @@
 [phases.setup]
-# 使用 Python 3.11 以兼容 pandas 2.0.3 的预编译 wheel
-nixPkgs = ["python311", "pip"]
+# 使用 Python 3.11；pip 随 python 自带，无需单独声明
+nixPkgs = ["python311"]
 
 [phases.install]
 cmds = [
-  "cd backend && pip install -r requirements.txt"
+  # 使用 python3 -m pip，避免找不到 pip 可执行文件
+  "cd backend && python3 -m pip install -r requirements.txt"
 ]
 
 [phases.build]
