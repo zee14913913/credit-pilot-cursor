@@ -1,0 +1,62 @@
+# Railway 部署命令
+
+## 第一步：推送代码到 GitHub
+
+cd /Users/1491-3913zee/Projects/CreditPilot
+
+# 初始化Git（如果还没有）
+git init
+
+# 添加所有文件
+git add .
+
+# 提交
+git commit -m "CreditPilot system ready for Railway deployment"
+
+# 添加远程仓库（替换为你的GitHub用户名）
+git remote add origin https://github.com/你的GitHub用户名/CreditPilot.git
+
+# 推送到GitHub
+git branch -M main
+git push -u origin main
+
+---
+
+## 第二步：在 Railway 部署
+
+1. 访问 https://railway.app
+2. 用 GitHub 登录
+3. 点击 "New Project" → "Deploy from GitHub repo"
+4. 选择 CreditPilot 仓库
+5. 等待部署完成
+
+---
+
+## 第三步：配置环境变量
+
+在 Railway 项目 → Variables 中添加：
+
+SENDER_EMAIL=business@infinite-gz.com
+SENDER_PASSWORD=gracgnrwghbeocox
+RECIPIENT_EMAIL=wang041396@gmail.com
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+UPLOAD_DIR=/app/uploads
+REPORTS_DIR=/app/reports
+
+---
+
+## 第四步：添加数据库和Volume
+
+1. 添加 PostgreSQL 数据库（New → Database → PostgreSQL）
+2. 添加 Volume：uploads（挂载到 /app/uploads）
+3. 添加 Volume：reports（挂载到 /app/reports）
+
+---
+
+## 第五步：配置定时任务
+
+New → Cron Job：
+- Name: daily-reminder
+- Schedule: 0 14 * * *（UTC下午2点 = 马来西亚晚上10点）
+- Command: cd backend && python3 reminder_system.py
