@@ -1,0 +1,22 @@
+# 推送代码到 GitHub
+
+## 步骤：
+
+1. 打开终端（Terminal）
+
+2. 复制粘贴这两行命令：
+cd /Users/1491-3913zee/Projects/CreditPilot
+git push -u origin main
+
+3. 当提示 Username 时：
+   输入：1491-3913zee
+   按回车
+
+4. 当提示 Password 时（有钥匙图标）：
+   - 方法1：在终端中右键点击，选择"粘贴"
+   - 方法2：点击菜单栏"编辑" → "粘贴"
+   - 方法3：手动输入Token（虽然看不到，但输入是正确的）
+   然后按回车
+
+5. 等待推送完成
+
