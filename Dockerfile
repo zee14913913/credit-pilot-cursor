@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 COPY . .
 
 # 确保启动脚本可执行
-RUN chmod +x backend/start.sh
+RUN chmod +x backend/start.sh backend/start_cron.sh
 
 WORKDIR /app/backend
 

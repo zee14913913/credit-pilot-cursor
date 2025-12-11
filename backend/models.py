@@ -52,13 +52,13 @@ class Statement(Base):
     # 文件信息（3个栏位）
     pdf_path = Column(String(500))  # PDF文件路径
     pdf_filename = Column(String(200))  # PDF文件名
-    upload_date = Column(Date, default=date.today)  # 上传日期
+    upload_date = Column(Date, default=lambda: date.today())  # 上传日期
     
     # 其他信息（5个栏位）
     total_transactions = Column(Integer, default=0)  # 交易笔数
     notes = Column(Text)  # 备注
-    created_at = Column(Date, default=date.today)  # 创建时间
-    updated_at = Column(Date, default=date.today, onupdate=date.today)  # 更新时间
+    created_at = Column(Date, default=lambda: date.today())  # 创建时间
+    updated_at = Column(Date, default=lambda: date.today(), onupdate=lambda: date.today())  # 更新时间
     is_active = Column(Boolean, default=True)  # 是否激活
     
     # 关系
@@ -113,7 +113,7 @@ class Document(Base):
     matched_transaction_id = Column(Integer, ForeignKey('transactions.id'), nullable=True)
     matched_amount = Column(Float)  # 匹配金额
     
-    upload_date = Column(Date, default=date.today)
+    upload_date = Column(Date, default=lambda: date.today())
     
     # 关系
     statement = relationship("Statement", back_populates="documents")
@@ -135,7 +135,7 @@ class Client(Base):
     default_bank = Column(String(100))  # 默认银行
     default_card_suffix = Column(String(10))  # 默认卡号后缀
     
-    created_at = Column(Date, default=date.today)
+    created_at = Column(Date, default=lambda: date.today())
     is_active = Column(Boolean, default=True)
     
     def __repr__(self):
@@ -147,7 +147,7 @@ class ReminderLog(Base):
     __tablename__ = 'reminder_logs'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    reminder_date = Column(Date, default=date.today)  # 提醒日期
+    reminder_date = Column(Date, default=lambda: date.today())  # 提醒日期
     reminder_time = Column(String(10))  # 提醒时间
     
     # 提醒内容
@@ -160,7 +160,7 @@ class ReminderLog(Base):
     # 报告文件
     excel_report_path = Column(String(500))  # Excel日报路径
     
-    created_at = Column(Date, default=date.today)
+    created_at = Column(Date, default=lambda: date.today())
     
     def __repr__(self):
         return f"<ReminderLog(id={self.id}, date={self.reminder_date})>"
@@ -170,16 +170,30 @@ class ReminderLog(Base):
 def get_database_url():
     """获取数据库URL"""
     db_url = os.getenv('DATABASE_URL', 'sqlite:///./creditpilot.db')
+    
+    # Railway PostgreSQL 连接字符串处理
+    # Railway 可能使用 postgres://，但 SQLAlchemy 2.0+ 需要 postgresql://
+    if db_url and db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+    
     return db_url
 
 
 def create_engine_instance():
     """创建数据库引擎"""
     db_url = get_database_url()
+    
     if db_url.startswith('sqlite'):
         return create_engine(db_url, connect_args={"check_same_thread": False})
     else:
-        return create_engine(db_url)
+        # PostgreSQL 连接配置
+        # 添加连接池配置以提高稳定性
+        return create_engine(
+            db_url,
+            pool_pre_ping=True,  # 连接前检查连接是否有效
+            pool_recycle=300,    # 回收连接时间（秒）
+            echo=False           # 生产环境关闭 SQL 日志
+        )
 
 
 engine = create_engine_instance()

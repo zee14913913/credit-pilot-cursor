@@ -15,7 +15,6 @@ from models import (
     Statement, Transaction, Document, Client, ReminderLog,
     get_db, SessionLocal
 )
-from datetime import date
 from pdf_parser import parse_alliance_bank_statement
 from classification_engine import (
     classify_all_transactions,
@@ -60,6 +59,12 @@ async def root():
         "status": "running",
         "docs": "/docs"
     }
+
+
+@app.get("/health")
+async def health_check():
+    """健康检查端点"""
+    return {"status": "healthy"}
 
 
 # ====================================================
